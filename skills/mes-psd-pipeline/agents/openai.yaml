@@ -1,0 +1,3 @@
+interface:
+  display_name: "MES PSD Pipeline"
+  short_description: "Portable ASCII and corrected PSD workflow with parameter checkpoint"
