@@ -1,11 +1,19 @@
 ---
 name: mes-psd-pipeline
-description: Convert Bruker OPUS MES trace exports to generic ASCII DAT files, build one-column time companions, and run corrected PSD v4 analysis. Use for MES modulation-excitation workflows and samples such as CHA NH3-O2, CHA O2-NH3, or Pt NH3-O2.
+description: Process modulation-excitation spectroscopy from Bruker OPUS exports. Requires an OPUS Data Point Table (*.dpt) and trace data (*Trace*.DPT); converts them to generic ASCII DAT files, builds a one-column time companion, and runs corrected PSD v4 analysis. Use for samples such as CHA NH3-O2, CHA O2-NH3, or Pt NH3-O2.
 ---
 
 # MES PSD Pipeline
 
-Use this skill for MES modulation-excitation data after OPUS has produced a trace table and a one-column time export.
+Use this skill for modulation-excitation spectroscopy processing after OPUS has exported the required data. The skill converts the OPUS exports to portable ASCII files, prepares the time axis, and performs corrected PSD v4 analysis.
+
+## Required OPUS inputs
+
+- **Data Point Table**: an OPUS `*.dpt` export containing the spectral matrix used for trace and PSD processing.
+- **Trace data**: an OPUS `*Trace*.DPT` export containing the trace/time information; its first column supplies the time values.
+- A separate one-column time export (`<sample>时间导出.dat`) may be used directly when available.
+
+The generic sample name is stripped of version dots, for example `CHA NH3-O2`, `CHA O2-NH3`, or `Pt NH3-O2`.
 
 ## Mandatory parameter checkpoint
 
