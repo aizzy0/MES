@@ -36,6 +36,26 @@ python 'C:\path\to\mes-psd-pipeline\scripts\mes_pipeline.py' `
 
 The script performs the conversion and corrected PSD calculation using only the Python standard library.
 
+## Phase analysis at selected wavenumbers
+
+After generating a PSD file, ask the user for wavenumbers they want to inspect. Run:
+
+```powershell
+python 'C:\path\to\mes-psd-pipeline\scripts\psd_phase_analysis.py' `
+  --psd '<PSD file>' `
+  --wavenumbers '1300,1450,1600,2350,3600'
+```
+
+The analysis reads the PSD file and its `.meta.json` sidecar. For each requested wavenumber it snaps to the nearest axis point and reports:
+
+- `phi_max_deg`: phase where the signed PSD response is maximum
+- `phase_lag_deg`: `(-phi_max) mod 360`
+- `phase_equivalent_delay_s`: `phase_lag/360 × period_s / harmonic`
+- `signed_phase_equivalent_delay_s`: wrapped to `[-T/(2k), +T/(2k)]`
+- `phase_defined`: false for a flat/noisy curve with no reliable phase
+
+Use distances in time only as phase-equivalent comparisons, not as kinetic time constants. The result depends on the phase origin and the `.meta.json` harmonic/period values.
+
 ## Output names
 
 For the standard `120 / 15 / 10 / 10` choices with fixed harmonic 1 and origin 0:

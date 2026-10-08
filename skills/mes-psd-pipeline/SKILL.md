@@ -1,6 +1,6 @@
 ---
 name: mes-psd-pipeline
-description: Process modulation-excitation spectroscopy from Bruker OPUS exports. Requires an OPUS Data Point Table (*.dpt) and trace data (*Trace*.DPT); converts them to generic ASCII DAT files, builds a one-column time companion, and runs corrected PSD v4 analysis. Use for samples such as CHA NH3-O2, CHA O2-NH3, or Pt NH3-O2.
+description: Process modulation-excitation spectroscopy from Bruker OPUS exports. Requires an OPUS Data Point Table (*.dpt) and trace data (*Trace*.DPT); converts them to generic ASCII DAT files, builds a one-column time companion, runs corrected PSD v4 analysis, and extracts phi_max, phase lag, and phase-equivalent delay at user-selected wavenumbers. Use for samples such as CHA NH3-O2, CHA O2-NH3, or Pt NH3-O2.
 ---
 
 # MES PSD Pipeline
@@ -48,6 +48,26 @@ python 'C:\path\to\mes-psd-pipeline\scripts\mes_pipeline.py' `
 ```
 
 The four user-selectable PSD parameters are required by the CLI. Harmonic and origin are fixed internally and are not prompted.
+
+## Selected-wavenumber phase analysis
+
+After PSD files exist, ask the user which wavenumbers to analyze. Run:
+
+```powershell
+python 'C:\path\to\mes-psd-pipeline\scripts\psd_phase_analysis.py' `
+  --psd '<sample>轨迹导出_<discard>_periods_cutoff_PSD_spectra_<phase-step>_dphi.txt' `
+  --wavenumbers '1300,1450,1600,2350,3600'
+```
+
+The script snaps each requested value to the nearest PSD axis point and reports:
+
+- `phi_max_deg`: phase of the maximum signed PSD response
+- `phase_lag_deg`: `(-phi_max) mod 360`
+- `phase_equivalent_delay_s`: `phase_lag / 360 × period_s / harmonic`
+- `signed_phase_equivalent_delay_s`: phase-equivalent delay wrapped to `[-T/(2k), +T/(2k)]`
+- `phase_defined`: false when the selected curve is too flat to define a phase
+
+The phase-equivalent delay is not a kinetic time constant. It is only a phase-to-time conversion.
 
 ## Required output names
 

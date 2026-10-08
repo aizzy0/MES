@@ -77,6 +77,24 @@ Fixed parameters:
 - Metadata records periods, discarded periods, spectra per period, phase step, harmonic, and origin.
 - `period_s` is inferred or agrees with `N x median(dt)`.
 
+## Selected-wavenumber phase analysis
+
+After generating a PSD file, provide the wavenumbers to inspect. The phase-analysis script snaps each value to the nearest PSD axis point and reports:
+
+- `phi_max_deg`
+- `phase_lag_deg`
+- `phase_equivalent_delay_s`
+- `signed_phase_equivalent_delay_s`
+- `phase_defined`
+
+```powershell
+python 'skills/mes-psd-pipeline/scripts/psd_phase_analysis.py' `
+  --psd '<PSD spectra TXT>' `
+  --wavenumbers '1300,1450,1600,2350,3600'
+```
+
+`phase_equivalent_delay_s` is a phase-to-time conversion, not a kinetic time constant.
+
 ---
 
 ## 中文
@@ -155,3 +173,21 @@ python 'skills/mes-psd-pipeline/scripts/mes_pipeline.py' `
 - PSD 输出列数为 `1 + ceil(360 / phase_step)`。
 - metadata 中记录总周期数、删除周期数、每周期谱图数、相分辨率、谐波和时间原点。
 - `period_s` 通过数据推断，或与 `N x median(dt)` 一致。
+
+### 选定波数的相位分析
+
+生成 PSD 文件后，可以直接输入需要分析的波数。脚本会自动匹配最近的波数点，并输出：
+
+- `phi_max_deg`：最大相位
+- `phase_lag_deg`：相位滞后
+- `phase_equivalent_delay_s`：相位等效延迟
+- `signed_phase_equivalent_delay_s`：带符号的等效延迟
+- `phase_defined`：该波数是否可以可靠定义相位
+
+```powershell
+python 'skills/mes-psd-pipeline/scripts/psd_phase_analysis.py' `
+  --psd '<PSD光谱TXT>' `
+  --wavenumbers '1300,1450,1600,2350,3600'
+```
+
+`phase_equivalent_delay_s` 只是相位到时间的换算，不是动力学时间常数。
