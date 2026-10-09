@@ -1,3 +1,3 @@
 interface:
   display_name: "MES PSD Pipeline"
-  short_description: "Portable MES ASCII, corrected PSD, and selected-wavenumber phase metrics"
+  short_description: "MES IR spectra to corrected PSD plus RGA mass-spec channel extraction"

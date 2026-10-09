@@ -95,6 +95,43 @@ python 'skills/mes-psd-pipeline/scripts/psd_phase_analysis.py' `
 
 `phase_equivalent_delay_s` is a phase-to-time conversion, not a kinetic time constant.
 
+## Mass-spec (RGA) channel extraction
+
+The same experiment also produces a Pfeiffer Vacuum PrismaPro RGA exported by
+PV MassSpec. Each `*.dat` opens with a metadata preamble of a few hundred lines,
+then a tab-separated table whose header begins `Time Relative (sec)` and
+continues with the recorded channels (`17_amu`, `18_amu`, ...).
+
+`extract_rga_ms.py` reduces each export to the columns that matter and writes
+`<name>_extracted.txt` beside it: relative time plus every recognised m/z channel.
+
+```powershell
+python 'skills/mes-psd-pipeline/scripts/extract_rga_ms.py' "D:\...\20261001-MS\*\*.dat"
+```
+
+The header row is found by content and the m/z columns by name, so different
+preamble lengths and column spellings (`17_amu`, `amu17`, `m/z 17`) all work.
+Standard library only.
+
+### Aligning the time axis
+
+Two operations that are easy to confuse, and they do opposite things:
+
+| Script | Effect | Output |
+|---|---|---|
+| `shift_time.py --offset <sec>` | re-zeroes the axis: keeps every row and subtracts a constant, so a chosen moment becomes t = 0 (earlier points go negative) | `<name>_t0.txt` |
+| `trim_by_time.py --min-time <sec>` | drops the rows below a cutoff; the axis is **not** re-zeroed | `<name>_cut.txt` |
+
+Both accept one value for every file, a comma list matched to the input order, or
+repeated `--shift` / `--cut` `FILE=SECONDS` pairs.
+
+Confirm which operation is wanted before running either: "cut the first 2200
+seconds" deletes rows, while "set 2200 s to zero" deletes none.
+
+Channel assignments and the interferences to watch are tabulated in
+`skills/mes-psd-pipeline/references/rga-dat-format.md`.
+
+
 ---
 
 ## 中文
@@ -191,3 +228,36 @@ python 'skills/mes-psd-pipeline/scripts/psd_phase_analysis.py' `
 ```
 
 `phase_equivalent_delay_s` 只是相位到时间的换算，不是动力学时间常数。
+
+### 质谱（RGA）通道提取
+
+同一次实验还有质谱数据，来自 Pfeiffer Vacuum PrismaPro，由 PV MassSpec 导出。每个 `*.dat`
+开头是几百行元数据，随后是 TAB 分隔的数据表，表头以 `Time Relative (sec)` 开始，
+后面是记录的通道（`17_amu`、`18_amu`……）。
+
+`extract_rga_ms.py` 把这些导出精简成需要的列，在源文件旁生成
+`<名称>_extracted.txt`：相对时间 + 全部识别到的 m/z 通道。
+
+```powershell
+python 'skills/mes-psd-pipeline/scripts/extract_rga_ms.py' "D:\...\20261001-MS\*\*.dat"
+```
+
+表头按内容定位、m/z 列按列名识别，所以元数据长度不同、列名写法不同
+（`17_amu`、`amu17`、`m/z 17`）都能处理。只用 Python 标准库。
+
+### 时间轴对齐
+
+两个容易混淆、效果相反的操作：
+
+| 脚本 | 效果 | 输出 |
+|---|---|---|
+| `shift_time.py --offset <秒>` | **时间归零**：保留全部行，减去常数，使某个时刻成为 t = 0（更早的点变为负值） | `<名称>_t0.txt` |
+| `trim_by_time.py --min-time <秒>` | **裁掉起始段**：删除切点之前的行，时间轴**不**归零 | `<名称>_cut.txt` |
+
+两者都支持：所有文件用同一数值、按输入顺序逗号分隔逐文件给值，或重复使用
+`--shift` / `--cut` 的 `文件=秒数` 形式。
+
+执行前请确认到底要哪一种：**"剪掉前 2200 秒"会删掉数据行，而"把 2200 秒设为 0"一行都不删。**
+
+通道归属与需要注意的干扰列在
+`skills/mes-psd-pipeline/references/rga-dat-format.md`。
